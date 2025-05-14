@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Search Kütüphanesi Demo by ardayaldiz07</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body>
+    <div class=" items-center" id="results"></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+
+        <div class="searchable bg-white border border-gray-300 rounded-lg shadow-md p-4" data-title="Klavye">
+            <h2 class="text-lg font-semibold text-gray-800 mb-2">Logitech G213 Klavye</h2>
+            <p class="text-gray-600">RGB ışıklı oyuncu klavyesi</p>
+        </div>
+
+        <div class="searchable bg-white border border-gray-300 rounded-lg shadow-md p-4" data-title="Fare">
+            <h2 class="text-lg font-semibold text-gray-800 mb-2">Razer DeathAdder V2</h2>
+            <p class="text-gray-600">FPS oyuncuları için ergonomik fare</p>
+        </div>
+
+        <div class="searchable bg-white border border-gray-300 rounded-lg shadow-md p-4" data-title="Kulaklık">
+            <h2 class="text-lg font-semibold text-gray-800 mb-2">HyperX Cloud II</h2>
+            <p class="text-gray-600">Surround destekli mikrofonlu kulaklık</p>
+        </div>
+
+    </div>
+
+
+    <script type="module">
+        import SearchEngine from './../src/index.js';
+
+        const search = new SearchEngine({
+            container: document.querySelector('#results'),
+            mode: 'list' //  'list'/'titled'
+        });
+        search.mount();
+    </script>
+
+</body>
+
+</html>
