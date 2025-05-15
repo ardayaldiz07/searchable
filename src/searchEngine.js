@@ -1,29 +1,37 @@
 import { renderResults } from "./Renderer.js";
 import { normalizeText } from "./Utils.js";
+import { createSearchInput } from "./inputCreate.js";
+import { fetchSearchablesFromRoutes } from "./remoteFetcher.js";
 
 export default class SearchEngine {
   constructor(options) {
     this.container = options.container;
     this.mode = options.mode || "list";
-    this.searchables = Array.from(document.querySelectorAll(".searchable"));
+    this.routes = options.routes || [];
+    this.searchables = [];
+    this.customInput = options.customInput || null;
   }
 
-  mount() {
-    // input
-    this.input = document.createElement("input");
-    this.input.type = "text";
-    this.input.placeholder = "Ara...";
-    this.input.className = "w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500";
-
-    // results wrapper
+  async mount() {
+    this.input = createSearchInput(this.customInput);
     this.resultsWrapper = document.createElement("div");
 
-    this.container.appendChild(this.input);
+    // Check custom inp
+    if (!this.customInput) {
+      this.container.appendChild(this.input);
+    }
+
     this.container.appendChild(this.resultsWrapper);
 
     this.input.addEventListener("input", (e) => this.search(e.target.value));
-    this.container.className="p-16 m-auto"
+
+    const currentPageItems = Array.from(document.querySelectorAll(".searchable"));
+    this.searchables.push(...currentPageItems);
+
+    const remoteItems = await fetchSearchablesFromRoutes(this.routes);
+    this.searchables.push(...remoteItems);
   }
+
 
   search(query) {
     const q = normalizeText(query);
