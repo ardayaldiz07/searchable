@@ -10,28 +10,35 @@ export default class SearchEngine {
     this.routes = options.routes || [];
     this.searchables = [];
     this.customInput = options.customInput || null;
+    this.compact = options.compact ?? false;
+    this.highlightColor = options.highlightColor || "#1D4ED8"; //Tailwind blue-700
   }
 
   async mount() {
-    this.input = createSearchInput(this.customInput);
-    this.resultsWrapper = document.createElement("div");
 
-    // Check custom inp
-    if (!this.customInput) {
-      this.container.appendChild(this.input);
+    if (this.compact) {
+      //this.createCompactSearch();
+    } else {
+      this.input = createSearchInput(this.customInput);
+      this.resultsWrapper = document.createElement("div");
+
+      // Check custom inp
+      if (!this.customInput) {
+        this.container.appendChild(this.input);
+      }
+
+      this.container.appendChild(this.resultsWrapper);
+
+      this.input.addEventListener("input", (e) => this.search(e.target.value));
+
+      const currentPageItems = Array.from(document.querySelectorAll(".searchable"));
+      this.searchables.push(...currentPageItems);
+
+      const remoteItems = await fetchSearchablesFromRoutes(this.routes);
+      this.searchables.push(...remoteItems);
     }
 
-    this.container.appendChild(this.resultsWrapper);
-
-    this.input.addEventListener("input", (e) => this.search(e.target.value));
-
-    const currentPageItems = Array.from(document.querySelectorAll(".searchable"));
-    this.searchables.push(...currentPageItems);
-
-    const remoteItems = await fetchSearchablesFromRoutes(this.routes);
-    this.searchables.push(...remoteItems);
   }
-
 
   search(query) {
     const q = normalizeText(query);
@@ -50,6 +57,11 @@ export default class SearchEngine {
       }
     });
 
-    renderResults(this.resultsWrapper, results, this.mode);
+    if(query.length == 0){
+      this.resultsWrapper.innerHTML = "";
+      return;
+    }
+
+    renderResults(this.resultsWrapper, results, this.mode, this.highlightColor);
   }
 }
